@@ -52,7 +52,6 @@ class TestList(unittest.TestCase):
         self.assertEqual(codes[ord('a')], '0000')
         self.assertEqual(codes[ord('f')], '0001')
 
-    '''
     def test_01_textfile(self):
         huffman_encode("file1.txt", "file1_out.txt")
         # capture errors by running 'diff' on your encoded file with a *known* solution file
@@ -81,7 +80,7 @@ class TestList(unittest.TestCase):
         self.assertEqual(err, 0)
         err = subprocess.call("diff -wb file_WAP_out_compressed.txt file_WAP_compressed_soln.txt", shell = True)
         self.assertEqual(err, 0)
-    
+    '''
     def test_05_empty(self):
         huffman_encode('empty_file.txt', 'empty_file_out.txt')
 
