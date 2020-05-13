@@ -1,5 +1,6 @@
 from huffman_bit_writer import *
 from ordered_list import *
+import os
 
 class HuffmanNode:
     def __init__(self, char, freq):
@@ -42,9 +43,6 @@ class HuffmanNode:
             return (self.char) < (other.char)
         return (self.freq) < (other.freq)
 
-    def __repr__(self):
-        return "HuffmanNode(%s, %s)" % (self.char, self.freq)
-
 def cnt_freq(filename):
     '''Opens a text file with a given file name (passed as a string) and counts the 
     frequency of occurrences of all the characters within that file'''
@@ -75,29 +73,15 @@ def combine(item1, item2):
     else:
         newNode.setChar(item2.getChar()) 
     newNode.setFreq(item1.getFreq()+item2.getFreq())
-    if item1.getFreq() < item2.getFreq():
-        newNode.setRight(item2)
-        newNode.setLeft(item1)
-    elif item1.getFreq() > item2.getFreq():
-        newNode.setRight(item1)
-        newNode.setLeft(item2)
-    else:
-        if item1.getChar() < item2.getChar():
-            newNode.setRight(item2)
-            newNode.setLeft(item1)
-        else:
-            newNode.setRight(item1)
-            newNode.setLeft(item2)
+    newNode.setRight(item2) 
+    newNode.setLeft(item1) 
     return newNode
-
 
 
 def create_huff_tree(char_freq):
     '''Create a Huffman tree for characters with non-zero frequency
     Returns the root node of the Huffman tree'''
     lst = create_list(char_freq)
-    if lst.size() == 0:
-        return HuffmanNode(None,None)
     while lst.size() > 1:
         item1 = lst.dummy.getNext()
         lst.remove(item1.getItem())
@@ -107,9 +91,6 @@ def create_huff_tree(char_freq):
         lst.add(newNode)
     return lst.dummy.getNext().getItem()
     
-
-
-
 def create_code(node):
     '''Returns an array (Python list) of Huffman codes. For each character, use the integer ASCII representation 
     as the index into the arrary, with the resulting Huffman code for that character stored at that location'''
@@ -130,13 +111,12 @@ def assignCode_helper(node, code, codeList):
 def create_header(freqs):
     '''Input is the list of frequencies. Creates and returns a header for the output file
     Example: For the frequency list asscoaied with "aaabbbbcc, would return “97 3 98 4 99 2” '''
-    freqList = []
+    freqList = ''
     for i in range(256):
         if freqs[i] > 0:
-            freqList.append(str(i))
-            freqList.append(str(freqs[i]))
-    freq_str = ' '.join(freqList)
-    return freq_str
+            freqList += str(i) + ' ' + str(freqs[i]) + ' '
+    freqList = freqList[:-1]
+    return freqList
 
 def huffman_encode(in_file, out_file):
     '''Takes inout file name and output file name as parameters - both files will have .txt extensions
@@ -146,6 +126,11 @@ def huffman_encode(in_file, out_file):
     provided in the huffman_bits_io module to write both the header and bits.
     Take not of special cases - empty file and file with only one unique character'''
     countList = cnt_freq(in_file)
+
+    file_path = in_file
+    if os.stat(file_path).st_size == 0:
+        return countList
+
     hufftree = create_huff_tree(countList)
     codeList = create_code(hufftree)
     header = create_header(countList)
@@ -158,9 +143,12 @@ def huffman_encode(in_file, out_file):
     outF.write(header + '\n')
     code = ''
     for char in readinF:
+        code += codeList[ord(char)]
+        '''
         for i in range(len(codeList)):
             if ord(char) == i:
                 code += codeList[i]
+        '''
     outF.write(code)
 
     compress = HuffmanBitWriter(compressed_out)
