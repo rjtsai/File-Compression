@@ -128,8 +128,6 @@ def huffman_encode(in_file, out_file):
     provided in the huffman_bits_io module to write both the header and bits.
     Take not of special cases - empty file and file with only one unique character'''
     countList = cnt_freq(in_file)
-    if not os.path.exists(in_file):
-        raise FileNotFoundError
 
     
     file_path = in_file
