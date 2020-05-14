@@ -10,6 +10,9 @@ class TestList(unittest.TestCase):
         freqlist	= cnt_freq("file2.txt")
         anslist = [2, 4, 8, 16, 0, 2, 0] 
         self.assertListEqual(freqlist[97:104], anslist)
+        with self.assertRaises(FileNotFoundError):
+            cnt_freq('not_exist.txt')
+        
 
     
     def test_lt_and_eq(self):
@@ -29,7 +32,10 @@ class TestList(unittest.TestCase):
     
     def test_create_header(self):
         freqlist = cnt_freq("file2.txt")
+        empty = cnt_freq('empty_file.txt')
         self.assertEqual(create_header(freqlist), "97 2 98 4 99 8 100 16 102 2")
+        self.assertEqual(create_header(empty), '')
+
 
     
     def test_create_huff_tree(self):
@@ -43,6 +49,14 @@ class TestList(unittest.TestCase):
         right = hufftree.right
         self.assertEqual(right.freq, 16)
         self.assertEqual(right.char, 100)
+        
+        empty = cnt_freq('empty_file.txt')
+        emptyTree = create_huff_tree(empty)
+        self.assertEqual(emptyTree, None)
+
+        single = cnt_freq('file3.txt')
+        singleTree = create_huff_tree(single)
+        self.assertEqual(singleTree.getRight(), None)
     
     def test_create_code(self):
         freqlist = cnt_freq("file2.txt")
@@ -83,6 +97,13 @@ class TestList(unittest.TestCase):
     '''
     def test_05_empty(self):
         huffman_encode('empty_file.txt', 'empty_file_out.txt')
+
+    def test_06_FileNotExist(self):
+        with self.assertRaises(FileNotFoundError):
+            huffman_encode('not_a_file.txt', 'not_out.txt')
+
+    def test_07_singleUnique(self):
+        huffman_encode('file3.txt', 'file3_out.txt')
 
 if __name__ == '__main__': 
    unittest.main()

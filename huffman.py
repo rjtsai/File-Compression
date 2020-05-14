@@ -46,6 +46,8 @@ class HuffmanNode:
 def cnt_freq(filename):
     '''Opens a text file with a given file name (passed as a string) and counts the 
     frequency of occurrences of all the characters within that file'''
+    if not os.path.exists(filename):
+        raise FileNotFoundError
     f = open(filename)
     fr = f.read()
     countList = []
@@ -96,7 +98,7 @@ def create_code(node):
     as the index into the arrary, with the resulting Huffman code for that character stored at that location'''
     codeList = []
     for i in range(256):
-        codeList.append(None)
+        codeList.append('')
     assignCode_helper(node, '', codeList)
     return codeList
     
@@ -126,11 +128,17 @@ def huffman_encode(in_file, out_file):
     provided in the huffman_bits_io module to write both the header and bits.
     Take not of special cases - empty file and file with only one unique character'''
     countList = cnt_freq(in_file)
+    if not os.path.exists(in_file):
+        raise FileNotFoundError
 
+    
     file_path = in_file
     if os.stat(file_path).st_size == 0:
-        return countList
-
+        outF = open(out_file, 'w')
+        outF.close()
+        return
+        
+    
     hufftree = create_huff_tree(countList)
     codeList = create_code(hufftree)
     header = create_header(countList)
