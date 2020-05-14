@@ -128,11 +128,13 @@ def huffman_encode(in_file, out_file):
     provided in the huffman_bits_io module to write both the header and bits.
     Take not of special cases - empty file and file with only one unique character'''
     countList = cnt_freq(in_file)
-
+    compressed_out = out_file[:-4] + '_compressed' + out_file[-4:]
     
     file_path = in_file
     if os.stat(file_path).st_size == 0:
         outF = open(out_file, 'w')
+        outComp = open(compressed_out, 'w')
+        outComp.close()
         outF.close()
         return
         
@@ -140,7 +142,6 @@ def huffman_encode(in_file, out_file):
     hufftree = create_huff_tree(countList)
     codeList = create_code(hufftree)
     header = create_header(countList)
-    compressed_out = out_file[:-4] + '_compressed' + out_file[-4:]
 
     inF = open(in_file)
     readinF = inF.read()
@@ -150,11 +151,7 @@ def huffman_encode(in_file, out_file):
     code = ''
     for char in readinF:
         code += codeList[ord(char)]
-        '''
-        for i in range(len(codeList)):
-            if ord(char) == i:
-                code += codeList[i]
-        '''
+        
     outF.write(code)
 
     compress = HuffmanBitWriter(compressed_out)

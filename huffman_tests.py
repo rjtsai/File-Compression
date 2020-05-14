@@ -104,6 +104,10 @@ class TestList(unittest.TestCase):
 
     def test_07_singleUnique(self):
         huffman_encode('file3.txt', 'file3_out.txt')
+        err = subprocess.call("diff -wb file3_out.txt file3_soln.txt", shell = True)
+        self.assertEqual(err, 0)
+        err = subprocess.call("diff -wb file3_out_compressed.txt file3_compressed_soln.txt", shell = True)
+        self.assertEqual(err, 0)
 
 if __name__ == '__main__': 
    unittest.main()
