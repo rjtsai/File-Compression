@@ -109,5 +109,12 @@ class TestList(unittest.TestCase):
         err = subprocess.call("diff -wb file3_out_compressed.txt file3_compressed_soln.txt", shell = True)
         self.assertEqual(err, 0)
 
+    def test_08_declaration(self):
+        huffman_encode('declaration.txt', 'declaration_out.txt')
+        err = subprocess.call("diff -wb declaration_out.txt declaration_soln.txt", shell = True)
+        self.assertEqual(err, 0)
+        err = subprocess.call("diff -wb declaration_out_compressed.txt declaration_compressed_soln.txt", shell = True)
+        self.assertEqual(err, 0)
+
 if __name__ == '__main__': 
    unittest.main()
