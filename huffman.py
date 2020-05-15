@@ -1,4 +1,5 @@
 from huffman_bit_writer import *
+from huffman_bit_reader import *
 from ordered_list import *
 import os
 
@@ -137,8 +138,7 @@ def huffman_encode(in_file, out_file):
         outComp.close()
         outF.close()
         return
-        
-    
+
     hufftree = create_huff_tree(countList)
     codeList = create_code(hufftree)
     header = create_header(countList)
@@ -164,6 +164,22 @@ def huffman_encode(in_file, out_file):
     outF.close()
     compress.close()
     
+def huffman_decode(encoded_file, decode_file):
+    if not os.path.exists(encoded_file):
+        raise FileNotFoundError
+    inFile = HuffmanBitReader(encoded_file)
+    freqList = parse_header(inFile.read_str())
+    hufftree = create_huff_tree(freqList)
 
+
+def parse_header(header_string):
+    freqList = [0 for i in range(256)]
+    header_list = header_string.split()
+    i = 0
+    while i < len(header_list):
+        freqList[header_list[i]] = header_list[i+1]
+        i += 2
+    return freqList
+        
 
 
