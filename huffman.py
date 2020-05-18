@@ -163,13 +163,57 @@ def huffman_encode(in_file, out_file):
     inF.close()
     outF.close()
     compress.close()
+
+def isLeaf(node):
+    if node.getLeft() is None and node.getRight() is None:
+        return True
+    return False
     
 def huffman_decode(encoded_file, decode_file):
     if not os.path.exists(encoded_file):
         raise FileNotFoundError
     inFile = HuffmanBitReader(encoded_file)
-    freqList = parse_header(inFile.read_str())
+    header = inFile.read_str()
+    header = header.decode('utf-8')
+    freqList = parse_header(header)
     hufftree = create_huff_tree(freqList)
+    if hufftree is None:
+        f = open(decode_file, 'w')
+        f.close()
+    elif isLeaf(hufftree):
+        f = open(decode_file, 'w')
+        freq = 0
+        decode_str = ''
+        while freq < hufftree.getFreq():
+            decode_str += str(chr(hufftree.getChar()))
+            freq += 1
+        f.write(decode_str)
+        f.close()
+    else:
+        decode_str = decode_helper(hufftree, inFile)
+        f = open(decode_file, 'w')
+        f.write(decode_str)
+        f.close()
+
+
+def decode_helper(hufftree, inFile):
+    node = hufftree
+    decode_str = ''
+    freq = 0
+    while freq < hufftree.getFreq():
+        info = inFile.read_bit()
+        if not info:
+            node = node.getLeft()
+        elif info:
+            node = node.getRight()
+        if isLeaf(node):
+            decode_str += str(chr(node.getChar()))
+            node = hufftree
+            freq += 1
+    return decode_str
+        
+
+    
 
 
 def parse_header(header_string):
@@ -177,7 +221,7 @@ def parse_header(header_string):
     header_list = header_string.split()
     i = 0
     while i < len(header_list):
-        freqList[header_list[i]] = header_list[i+1]
+        freqList[int(header_list[i])] = int(header_list[i+1])
         i += 2
     return freqList
         
